@@ -1,210 +1,161 @@
-/* =========================================================
-   RESUME BUILDER — script.js
-   ========================================================= */
-
-/* ---------- Live preview binding (simple fields) ---------- */
-const simpleFields = [
-  { input: "name",      target: "p-name"      },
-  { input: "title",     target: "p-title"     },
-  { input: "summary",   target: "p-summary"   },
-  { input: "skills",    target: "p-skills"    },
-];
-
-simpleFields.forEach(({ input, target }) => {
-  document.getElementById(input).addEventListener("input", updateSimple);
-});
-
-function updateSimple() {
-  simpleFields.forEach(({ input, target }) => {
-    document.getElementById(target).textContent =
-      document.getElementById(input).value;
-  });
-  updateContact();
-  hideEmptySections();
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
-/* ---------- Contact line (email | phone | location | website) ---------- */
-["email", "phone", "location", "website"].forEach((id) => {
-  document.getElementById(id).addEventListener("input", updateContact);
-});
-
-function updateContact() {
-  const parts = [
-    document.getElementById("email").value,
-    document.getElementById("phone").value,
-    document.getElementById("location").value,
-    document.getElementById("website").value,
-  ].filter((p) => p.trim() !== "");
-
-  document.getElementById("p-contact").textContent = parts.join("  |  ");
+body {
+  font-family: "Segoe UI", Arial, sans-serif;
+  background: #eef2f7;
+  color: #1f2937;
+  padding: 20px;
 }
 
-/* =========================================================
-   EXPERIENCE
-   ========================================================= */
-let expCount = 0;
-
-function addExperience() {
-  expCount++;
-  const id = expCount;
-
-  const card = document.createElement("div");
-  card.className = "entry-card";
-  card.id = `exp-card-${id}`;
-  card.innerHTML = `
-    <button type="button" class="remove-btn" onclick="removeExperience(${id})">✕</button>
-    <input type="text" placeholder="Job Title" oninput="renderExperience()" data-field="jobtitle" data-exp="${id}">
-    <input type="text" placeholder="Company" oninput="renderExperience()" data-field="company" data-exp="${id}">
-    <input type="text" placeholder="Start – End (e.g. Jan 2022 – Present)" oninput="renderExperience()" data-field="dates" data-exp="${id}">
-    <textarea rows="3" placeholder="Description / Achievements" oninput="renderExperience()" data-field="desc" data-exp="${id}"></textarea>
-  `;
-
-  document.getElementById("experience-list").appendChild(card);
-  renderExperience();
+.app-header {
+  text-align: center;
+  margin-bottom: 25px;
 }
 
-function removeExperience(id) {
-  document.getElementById(`exp-card-${id}`).remove();
-  renderExperience();
+.app-header h1 {
+  font-size: 2rem;
+  color: #1e3a8a;
 }
 
-function renderExperience() {
-  const list = document.getElementById("p-experience");
-  list.innerHTML = "";
-
-  document.querySelectorAll('[data-field][data-exp]').forEach(() => {}); // no-op safety
-  const ids = [...new Set(
-    [...document.querySelectorAll("[data-exp]")].map((el) => el.dataset.exp)
-  )];
-
-  ids.forEach((id) => {
-    const get = (field) =>
-      document.querySelector(`[data-exp="${id}"][data-field="${field}"]`)?.value || "";
-
-    const jobtitle = get("jobtitle");
-    const company  = get("company");
-    const dates    = get("dates");
-    const desc     = get("desc");
-
-    if (!jobtitle && !company && !desc) return; // skip empty
-
-    const entry = document.createElement("div");
-    entry.className = "preview-entry";
-    entry.innerHTML = `
-      <div class="entry-title">${escapeHTML(jobtitle)}</div>
-      <div class="entry-sub">${escapeHTML(company)}</div>
-      <div class="entry-date">${escapeHTML(dates)}</div>
-      <div class="entry-desc">${escapeHTML(desc)}</div>
-    `;
-    list.appendChild(entry);
-  });
-
-  hideEmptySections();
+.container {
+  display: flex;
+  gap: 25px;
+  max-width: 1350px;
+  margin: 0 auto;
+  align-items: flex-start;
 }
 
-/* =========================================================
-   EDUCATION
-   ========================================================= */
-let eduCount = 0;
-
-function addEducation() {
-  eduCount++;
-  const id = eduCount;
-
-  const card = document.createElement("div");
-  card.className = "entry-card";
-  card.id = `edu-card-${id}`;
-  card.innerHTML = `
-    <button type="button" class="remove-btn" onclick="removeEducation(${id})">✕</button>
-    <input type="text" placeholder="Degree / Course" oninput="renderEducation()" data-field="degree" data-edu="${id}">
-    <input type="text" placeholder="Institution" oninput="renderEducation()" data-field="school" data-edu="${id}">
-    <input type="text" placeholder="Year (e.g. 2019 – 2023)" oninput="renderEducation()" data-field="year" data-edu="${id}">
-  `;
-
-  document.getElementById("education-list").appendChild(card);
-  renderEducation();
+/* ============ FORM PANEL ============ */
+.form-panel {
+  flex: 1;
+  background: #fff;
+  padding: 25px;
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+  max-height: 90vh;
+  overflow-y: auto;
+  min-width: 350px;
 }
 
-function removeEducation(id) {
-  document.getElementById(`edu-card-${id}`).remove();
-  renderEducation();
+.form-panel h2 { margin-bottom: 15px; color: #1e3a8a; }
+
+fieldset {
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 15px;
+  margin-bottom: 18px;
 }
 
-function renderEducation() {
-  const list = document.getElementById("p-education");
-  list.innerHTML = "";
+legend { font-weight: 600; padding: 0 8px; color: #374151; }
 
-  const ids = [...new Set(
-    [...document.querySelectorAll("[data-edu]")].map((el) => el.dataset.edu)
-  )];
-
-  ids.forEach((id) => {
-    const get = (field) =>
-      document.querySelector(`[data-edu="${id}"][data-field="${field}"]`)?.value || "";
-
-    const degree = get("degree");
-    const school = get("school");
-    const year   = get("year");
-
-    if (!degree && !school) return;
-
-    const entry = document.createElement("div");
-    entry.className = "preview-entry";
-    entry.innerHTML = `
-      <div class="entry-title">${escapeHTML(degree)}</div>
-      <div class="entry-sub">${escapeHTML(school)}</div>
-      <div class="entry-date">${escapeHTML(year)}</div>
-    `;
-    list.appendChild(entry);
-  });
-
-  hideEmptySections();
+input[type="text"], input[type="email"], textarea, select {
+  display: block;
+  width: 100%;
+  margin: 8px 0;
+  padding: 10px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  font-family: inherit;
 }
 
-/* =========================================================
-   HIDE EMPTY SECTIONS
-   ========================================================= */
-function hideEmptySections() {
-  const toggle = (sectionId, hasContent) => {
-    document.getElementById(sectionId).style.display = hasContent ? "block" : "none";
-  };
+input:focus, textarea:focus { outline: none; border-color: #2563eb; }
 
-  toggle("summary-section",    document.getElementById("summary").value.trim() !== "");
-  toggle("skills-section",     document.getElementById("skills").value.trim() !== "");
-  toggle("experience-section", document.getElementById("p-experience").children.length > 0);
-  toggle("education-section",  document.getElementById("p-education").children.length > 0);
+/* Settings Box Specific */
+.settings-box { background: #f0fdf4; border-color: #bbf7d0; }
+.settings-box label { display: block; font-size: 0.85rem; font-weight: 600; margin-top: 8px; color: #166534; }
+.settings-box input[type="color"] { width: 100%; height: 40px; cursor: pointer; border: 1px solid #ccc; border-radius: 6px; padding: 2px; margin-top: 4px; }
+
+.download-btn {
+  width: 100%;
+  padding: 14px;
+  background: #1e3a8a;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 10px;
 }
 
-/* =========================================================
-   PDF DOWNLOAD
-   ========================================================= */
-function downloadPDF() {
-  const element = document.getElementById("preview");
-  const name = document.getElementById("name").value.trim() || "resume";
+.download-btn:hover { background: #1e40af; }
 
-  const options = {
-    margin: 0.5,
-    filename: `${name.replace(/\s+/g, "_")}_Resume.pdf`,
-    image: { type: "jpeg", quality: 0.98 },
-    html2canvas: { scale: 2, useCORS: true },
-    jsPDF: { unit: "in", format: "a4", orientation: "portrait" },
-  };
-
-  html2pdf().set(options).from(element).save();
+.page-warning {
+  display: none;
+  color: #dc2626;
+  font-size: 0.85rem;
+  text-align: center;
+  margin-top: 10px;
+  font-weight: bold;
 }
 
-/* =========================================================
-   HELPERS
-   ========================================================= */
-function escapeHTML(str) {
-  const div = document.createElement("div");
-  div.textContent = str;
-  return div.innerHTML;
+/* ============ PREVIEW PANEL ============ */
+.preview-panel {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
-/* ---------- Initialize ---------- */
-window.addEventListener("DOMContentLoaded", () => {
-  updateSimple();
-  updateContact();
-  hideEmptySections();
-});
+.preview-panel h2 { margin-bottom: 15px; color: #1e3a8a; align-self: flex-start;}
+
+/* A4 Paper Style */
+.a4-page {
+  background: #fff;
+  width: 210mm;
+  min-height: 297mm;
+  padding: 15mm;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  font-family: Arial, sans-serif;
+  color: #000;
+  font-size: 11pt;
+  line-height: 1.4;
+}
+
+/* App Document Header (RESUME) */
+.app-doc-header {
+  text-align: center;
+  font-size: 18pt;
+  font-weight: bold;
+  letter-spacing: 2px;
+  margin-bottom: 20px;
+  border-bottom: 2px dashed #ccc;
+  padding-bottom: 10px;
+}
+
+/* Resume Top Section */
+.resume-top h1 { font-size: 24pt; text-transform: uppercase; margin-bottom: 5px; }
+.contact-line { font-size: 11pt; margin-bottom: 15px; word-spacing: 2px; }
+.contact-line span { margin: 0 4px; }
+
+/* Blue Highlight Sections */
+.section-block { margin-bottom: 15px; display: none; }
+
+.section-header {
+  background-color: #0000cd; /* Default Blue */
+  color: #ffffff;
+  font-size: 12pt;
+  font-weight: bold;
+  padding: 3px 8px;
+  margin-bottom: 8px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+/* Lists inside sections */
+.section-block ul { padding-left: 20px; margin-top: 5px; }
+.section-block ul li { margin-bottom: 3px; }
+
+/* Text lines inside sections */
+.section-block p, .section-block div { margin-bottom: 4px; }
+
+/* ============ RESPONSIVE ============ */
+@media (max-width: 1100px) {
+  .container { flex-direction: column; }
+  .a4-page { width: 100%; min-height: auto; padding: 20px; }
+}
