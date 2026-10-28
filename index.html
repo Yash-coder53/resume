@@ -17,7 +17,7 @@
     <section class="form-panel">
       <h2>Fill Your Details</h2>
 
-      <!-- Settings Box (New Features) -->
+      <!-- Settings Box -->
       <fieldset class="settings-box">
         <legend>⚙️ Appearance Settings</legend>
         
@@ -49,16 +49,16 @@
         <textarea id="objective" rows="3" placeholder="To secure a position as a..." oninput="updatePreview()"></textarea>
       </fieldset>
 
-      <!-- Skills (List style like image) -->
+      <!-- Skills -->
       <fieldset>
         <legend>Skills (One per line)</legend>
-        <textarea id="skills" rows="5" placeholder="Tally (ERP)\nAccounting\nMS Excel" oninput="updatePreview()"></textarea>
+        <textarea id="skills" rows="5" placeholder="Tally (ERP)&#10;Accounting&#10;MS Excel" oninput="updatePreview()"></textarea>
       </fieldset>
 
       <!-- Education -->
       <fieldset>
         <legend>Education (One per line)</legend>
-        <textarea id="education" rows="4" placeholder="10th Pass (HBSE Board)\n12th Pass (HBSE Board)" oninput="updatePreview()"></textarea>
+        <textarea id="education" rows="4" placeholder="10th Pass (HBSE Board)&#10;12th Pass (HBSE Board)" oninput="updatePreview()"></textarea>
       </fieldset>
 
       <!-- Experience -->
@@ -70,13 +70,13 @@
       <!-- Languages -->
       <fieldset>
         <legend>Languages (One per line)</legend>
-        <textarea id="languages" rows="3" placeholder="Hindi (Fluent)\nEnglish (Basic)" oninput="updatePreview()"></textarea>
+        <textarea id="languages" rows="3" placeholder="Hindi (Fluent)&#10;English (Basic)" oninput="updatePreview()"></textarea>
       </fieldset>
 
       <!-- Personal Details -->
       <fieldset>
         <legend>Personal Details (One per line)</legend>
-        <textarea id="personal-details" rows="3" placeholder="Date of Birth: 10-07-2003\nNationality: Indian" oninput="updatePreview()"></textarea>
+        <textarea id="personal-details" rows="3" placeholder="Date of Birth: 10-07-2003&#10;Nationality: Indian" oninput="updatePreview()"></textarea>
       </fieldset>
 
       <!-- Declaration -->
@@ -93,55 +93,45 @@
     <section class="preview-panel">
       <h2>Live Preview</h2>
       
-      <!-- A4 Sized Resume Paper -->
       <div class="a4-page" id="resume-preview">
         
-        <!-- App Header (Default: RESUME) -->
         <div class="app-doc-header" id="p-doc-header">RESUME</div>
 
-        <!-- Name & Contact -->
         <div class="resume-top">
-          <h1 id="p-name">ROHIT</h1>
-          <div class="contact-line" id="p-contact"></div>
+          <h1 id="p-name">YOUR NAME</h1>
+          <div class="contact-line" id="p-contact">Mob: | Email | Location</div>
         </div>
 
-        <!-- Career Objective -->
         <div class="section-block" id="sec-objective">
           <div class="section-header">CAREER OBJECTIVE</div>
           <p id="p-objective"></p>
         </div>
 
-        <!-- Skills -->
         <div class="section-block" id="sec-skills">
           <div class="section-header">SKILLS</div>
           <ul id="p-skills"></ul>
         </div>
 
-        <!-- Education -->
         <div class="section-block" id="sec-education">
           <div class="section-header">EDUCATION</div>
           <div id="p-education"></div>
         </div>
 
-        <!-- Experience -->
         <div class="section-block" id="sec-experience">
           <div class="section-header">EXPERIENCE</div>
           <div id="p-experience"></div>
         </div>
 
-        <!-- Languages -->
         <div class="section-block" id="sec-languages">
           <div class="section-header">LANGUAGES</div>
           <div id="p-languages"></div>
         </div>
 
-        <!-- Personal Details -->
         <div class="section-block" id="sec-personal">
           <div class="section-header">PERSONAL DETAILS</div>
           <div id="p-personal"></div>
         </div>
 
-        <!-- Declaration -->
         <div class="section-block" id="sec-declaration">
           <div class="section-header">DECLARATION</div>
           <p id="p-declaration"></p>
