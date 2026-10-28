@@ -1,5 +1,5 @@
 /* =========================================================
-   RESUME BUILDER — script.js
+   RESUME BUILDER — script.js (Blank by Default)
    ========================================================= */
 
 const inputIds = [
@@ -16,7 +16,8 @@ inputIds.forEach(id => {
 /* ---------- Update Live Preview ---------- */
 function updatePreview() {
   // Personal Info
-  document.getElementById("p-name").textContent = document.getElementById("name").value || "YOUR NAME";
+  const nameValue = document.getElementById("name").value;
+  document.getElementById("p-name").textContent = nameValue || "YOUR NAME";
   
   // Contact Info (Format: Mob: | Email | Location)
   const phone = document.getElementById("phone").value;
@@ -28,42 +29,45 @@ function updatePreview() {
   if(email) contactHTML.push(`<a href="mailto:${escapeHTML(email)}" style="color:blue; text-decoration:underline;">${escapeHTML(email)}</a>`);
   if(location) contactHTML.push(`${escapeHTML(location)}`);
   
-  document.getElementById("p-contact").innerHTML = contactHTML.join(" | ");
+  document.getElementById("p-contact").innerHTML = contactHTML.length > 0 ? contactHTML.join(" | ") : "Mob: [Phone] | Email | Location";
 
   // Career Objective
-  document.getElementById("p-objective").textContent = document.getElementById("objective").value;
+  const objValue = document.getElementById("objective").value;
+  document.getElementById("p-objective").textContent = objValue || "Your career objective will appear here...";
 
   // Skills (Bullet Points)
   const skills = document.getElementById("skills").value.split('\n').filter(s => s.trim() !== "");
-  document.getElementById("p-skills").innerHTML = skills.map(s => `<li>${escapeHTML(s)}</li>`).join('');
+  document.getElementById("p-skills").innerHTML = skills.length > 0 ? skills.map(s => `<li>${escapeHTML(s)}</li>`).join('') : "<li>Your skills will appear here...</li>";
 
   // Education (Line by Line)
   const edu = document.getElementById("education").value.split('\n').filter(s => s.trim() !== "");
-  document.getElementById("p-education").innerHTML = edu.map(s => `<div>${escapeHTML(s)}</div>`).join('');
+  document.getElementById("p-education").innerHTML = edu.length > 0 ? edu.map(s => `<div>${escapeHTML(s)}</div>`).join('') : "<div>Your education details will appear here...</div>";
 
   // Experience
   const exp = document.getElementById("experience").value.split('\n').filter(s => s.trim() !== "");
-  document.getElementById("p-experience").innerHTML = exp.map(s => `<div>${escapeHTML(s)}</div>`).join('');
+  document.getElementById("p-experience").innerHTML = exp.length > 0 ? exp.map(s => `<div>${escapeHTML(s)}</div>`).join('') : "<div>Your experience will appear here...</div>";
 
   // Languages
   const lang = document.getElementById("languages").value.split('\n').filter(s => s.trim() !== "");
-  document.getElementById("p-languages").innerHTML = lang.map(s => `<div>${escapeHTML(s)}</div>`).join('');
+  document.getElementById("p-languages").innerHTML = lang.length > 0 ? lang.map(s => `<div>${escapeHTML(s)}</div>`).join('') : "<div>Your languages will appear here...</div>";
 
   // Personal Details
   const details = document.getElementById("personal-details").value.split('\n').filter(s => s.trim() !== "");
-  document.getElementById("p-personal").innerHTML = details.map(s => `<div>${escapeHTML(s)}</div>`).join('');
+  document.getElementById("p-personal").innerHTML = details.length > 0 ? details.map(s => `<div>${escapeHTML(s)}</div>`).join('') : "<div>Your personal details will appear here...</div>";
 
   // Declaration
-  document.getElementById("p-declaration").textContent = document.getElementById("declaration").value;
+  const decValue = document.getElementById("declaration").value;
+  document.getElementById("p-declaration").textContent = decValue || "Your declaration will appear here...";
 
   // Show/Hide sections based on content
-  toggleSection("sec-objective", "objective");
-  toggleSection("sec-skills", "skills");
-  toggleSection("sec-education", "education");
-  toggleSection("sec-experience", "experience");
-  toggleSection("sec-languages", "languages");
-  toggleSection("sec-personal", "personal-details");
-  toggleSection("sec-declaration", "declaration");
+  // (Ab default me sabhi sections dikhenge taki user ko pata chale kya bharna hai)
+  document.getElementById("sec-objective").style.display = "block";
+  document.getElementById("sec-skills").style.display = "block";
+  document.getElementById("sec-education").style.display = "block";
+  document.getElementById("sec-experience").style.display = "block";
+  document.getElementById("sec-languages").style.display = "block";
+  document.getElementById("sec-personal").style.display = "block";
+  document.getElementById("sec-declaration").style.display = "block";
 
   checkPageLength();
 }
@@ -85,12 +89,6 @@ function applyFont() {
 }
 
 /* ---------- Helpers ---------- */
-function toggleSection(sectionId, inputId) {
-  const val = document.getElementById(inputId).value.trim();
-  const section = document.getElementById(sectionId);
-  section.style.display = val !== "" ? "block" : "none";
-}
-
 function escapeHTML(str) {
   const div = document.createElement("div");
   div.textContent = str;
@@ -113,12 +111,12 @@ function checkPageLength() {
 /* ---------- PDF Download ---------- */
 function downloadPDF() {
   const element = document.getElementById("resume-preview");
-  const name = document.getElementById("name").value.trim() || "My";
-  const themeColor = document.getElementById("theme-color").value;
+  const nameInput = document.getElementById("name").value.trim();
+  const fileName = nameInput ? `${nameInput}_Resume.pdf` : `My_Resume.pdf`;
 
   const options = {
     margin: 0,
-    filename: `${name}_Resume.pdf`,
+    filename: fileName,
     image: { type: "jpeg", quality: 0.98 },
     html2canvas: { 
       scale: 2, 
@@ -128,8 +126,7 @@ function downloadPDF() {
     // A4 size in inches
     jsPDF: { unit: "in", format: "a4", orientation: "portrait" },
     
-    // This ensures multi-page works correctly by adding a background color
-    // and making sure text doesn't break weirdly.
+    // This ensures multi-page works correctly
     pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
   };
 
@@ -138,28 +135,8 @@ function downloadPDF() {
 
 /* ---------- Initialize on Load ---------- */
 window.addEventListener("DOMContentLoaded", () => {
-  // Add sample data to match your image exactly for first load
-  document.getElementById("name").value = "ROHIT";
-  document.getElementById("phone").value = "+91-9812152324";
-  document.getElementById("email").value = "Rohitmalk981215232@gmail.com";
-  document.getElementById("location").value = "Paju Kalan Dist. Jind, Haryana, India";
-  
-  document.getElementById("objective").value = "To secure a position as a Tally Operator / Accountant where I can utilize my accounting knowledge, computer skills, and contribute to organizational growth.";
-  
-  document.getElementById("skills").value = "Tally (ERP)\nAccounting (Debit & Credit)\nMS Excel\nData Entry\nInvoice & Billing\nGST (Knowledge)\nHindi & English Typing\nCorelDRAW (Basic)";
-  
-  document.getElementById("education").value = "10th Pass (HBSE Board)\n12th Pass (HBSE Board)\nBA Final";
-  
-  document.getElementById("experience").value = "2 Years Experience in CA Office";
-  
-  document.getElementById("languages").value = "Hindi (Fluent)\nEnglish (Basic)";
-  
-  document.getElementById("personal-details").value = "Date of Birth: 10-07-2003\nNationality: Indian";
-  
-  document.getElementById("declaration").value = "I hereby declare that the information provided above is true and correct to the best of my knowledge.";
-
   // Apply default settings
   applyTheme();
   applyFont();
-  updatePreview();
+  updatePreview(); // Ye blank placeholders load karega
 });
