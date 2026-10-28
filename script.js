@@ -1,5 +1,5 @@
 /* =========================================================
-   RESUME BUILDER — script.js (Blank by Default)
+   RESUME BUILDER — script.js (100% Blank Start)
    ========================================================= */
 
 const inputIds = [
@@ -8,68 +8,73 @@ const inputIds = [
   "personal-details", "declaration"
 ];
 
-// Bind input events to update preview
+// Bind input events to update preview as user types
 inputIds.forEach(id => {
   document.getElementById(id).addEventListener("input", updatePreview);
 });
 
 /* ---------- Update Live Preview ---------- */
 function updatePreview() {
-  // Personal Info
+  // 1. Personal Info
   const nameValue = document.getElementById("name").value;
   document.getElementById("p-name").textContent = nameValue || "YOUR NAME";
   
-  // Contact Info (Format: Mob: | Email | Location)
+  // 2. Contact Info (Format: Mob: | Email | Location)
   const phone = document.getElementById("phone").value;
   const email = document.getElementById("email").value;
   const location = document.getElementById("location").value;
   
   let contactHTML = [];
   if(phone) contactHTML.push(`Mob: ${escapeHTML(phone)}`);
-  if(email) contactHTML.push(`<a href="mailto:${escapeHTML(email)}" style="color:blue; text-decoration:underline;">${escapeHTML(email)}</a>`);
+  if(email) contactHTML.push(`<a href="mailto:${escapeHTML(email)}" style="color:#0000cd;">${escapeHTML(email)}</a>`);
   if(location) contactHTML.push(`${escapeHTML(location)}`);
   
-  document.getElementById("p-contact").innerHTML = contactHTML.length > 0 ? contactHTML.join(" | ") : "Mob: [Phone] | Email | Location";
+  document.getElementById("p-contact").innerHTML = contactHTML.length > 0 ? contactHTML.join(" | ") : "Mob: | Email | Location";
 
-  // Career Objective
-  const objValue = document.getElementById("objective").value;
-  document.getElementById("p-objective").textContent = objValue || "Your career objective will appear here...";
+  // 3. Career Objective
+  document.getElementById("p-objective").textContent = document.getElementById("objective").value;
 
-  // Skills (Bullet Points)
+  // 4. Skills (Bullet Points)
   const skills = document.getElementById("skills").value.split('\n').filter(s => s.trim() !== "");
-  document.getElementById("p-skills").innerHTML = skills.length > 0 ? skills.map(s => `<li>${escapeHTML(s)}</li>`).join('') : "<li>Your skills will appear here...</li>";
+  document.getElementById("p-skills").innerHTML = skills.map(s => `<li>${escapeHTML(s)}</li>`).join('');
 
-  // Education (Line by Line)
+  // 5. Education
   const edu = document.getElementById("education").value.split('\n').filter(s => s.trim() !== "");
-  document.getElementById("p-education").innerHTML = edu.length > 0 ? edu.map(s => `<div>${escapeHTML(s)}</div>`).join('') : "<div>Your education details will appear here...</div>";
+  document.getElementById("p-education").innerHTML = edu.map(s => `<div>${escapeHTML(s)}</div>`).join('');
 
-  // Experience
+  // 6. Experience
   const exp = document.getElementById("experience").value.split('\n').filter(s => s.trim() !== "");
-  document.getElementById("p-experience").innerHTML = exp.length > 0 ? exp.map(s => `<div>${escapeHTML(s)}</div>`).join('') : "<div>Your experience will appear here...</div>";
+  document.getElementById("p-experience").innerHTML = exp.map(s => `<div>${escapeHTML(s)}</div>`).join('');
 
-  // Languages
+  // 7. Languages
   const lang = document.getElementById("languages").value.split('\n').filter(s => s.trim() !== "");
-  document.getElementById("p-languages").innerHTML = lang.length > 0 ? lang.map(s => `<div>${escapeHTML(s)}</div>`).join('') : "<div>Your languages will appear here...</div>";
+  document.getElementById("p-languages").innerHTML = lang.map(s => `<div>${escapeHTML(s)}</div>`).join('');
 
-  // Personal Details
+  // 8. Personal Details
   const details = document.getElementById("personal-details").value.split('\n').filter(s => s.trim() !== "");
-  document.getElementById("p-personal").innerHTML = details.length > 0 ? details.map(s => `<div>${escapeHTML(s)}</div>`).join('') : "<div>Your personal details will appear here...</div>";
+  document.getElementById("p-personal").innerHTML = details.map(s => `<div>${escapeHTML(s)}</div>`).join('');
 
-  // Declaration
-  const decValue = document.getElementById("declaration").value;
-  document.getElementById("p-declaration").textContent = decValue || "Your declaration will appear here...";
+  // 9. Declaration
+  document.getElementById("p-declaration").textContent = document.getElementById("declaration").value;
 
-  // Show/Hide sections based on content
-  // (Ab default me sabhi sections dikhenge taki user ko pata chale kya bharna hai)
-  document.getElementById("sec-objective").style.display = "block";
-  document.getElementById("sec-skills").style.display = "block";
-  document.getElementById("sec-education").style.display = "block";
-  document.getElementById("sec-experience").style.display = "block";
-  document.getElementById("sec-languages").style.display = "block";
-  document.getElementById("sec-personal").style.display = "block";
-  document.getElementById("sec-declaration").style.display = "block";
+  // Hide sections if they are empty
+  toggleSection("sec-objective", "objective");
+  toggleSection("sec-skills", "skills");
+  toggleSection("sec-education", "education");
+  toggleSection("sec-experience", "experience");
+  toggleSection("sec-languages", "languages");
+  toggleSection("sec-personal", "personal-details");
+  toggleSection("sec-declaration", "declaration");
 
   checkPageLength();
+}
+
+/* ---------- Hide Empty Sections ---------- */
+function toggleSection(sectionId, inputId) {
+  const val = document.getElementById(inputId).value.trim();
+  const section = document.getElementById(sectionId);
+  // Agar input khali hai, toh preview me wo section chhupa do
+  section.style.display = val !== "" ? "block" : "none";
 }
 
 /* ---------- Theme Color ---------- */
@@ -78,7 +83,6 @@ function applyTheme() {
   document.querySelectorAll(".section-header").forEach(header => {
     header.style.backgroundColor = color;
   });
-  // Optional: Make the "RESUME" text match the theme color slightly
   document.getElementById("p-doc-header").style.color = color;
 }
 
@@ -100,7 +104,6 @@ function checkPageLength() {
   const preview = document.getElementById("resume-preview");
   const warning = document.getElementById("page-warning");
   
-  // A4 height is roughly 1122px (at 96 DPI). If content exceeds this, warn the user.
   if (preview.scrollHeight > 1122) {
     warning.style.display = "block";
   } else {
@@ -118,15 +121,8 @@ function downloadPDF() {
     margin: 0,
     filename: fileName,
     image: { type: "jpeg", quality: 0.98 },
-    html2canvas: { 
-      scale: 2, 
-      useCORS: true,
-      scrollY: 0 
-    },
-    // A4 size in inches
+    html2canvas: { scale: 2, useCORS: true, scrollY: 0 },
     jsPDF: { unit: "in", format: "a4", orientation: "portrait" },
-    
-    // This ensures multi-page works correctly
     pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
   };
 
@@ -135,8 +131,8 @@ function downloadPDF() {
 
 /* ---------- Initialize on Load ---------- */
 window.addEventListener("DOMContentLoaded", () => {
-  // Apply default settings
+  // Sirf theme aur font apply karo, koi data load mat karo
   applyTheme();
   applyFont();
-  updatePreview(); // Ye blank placeholders load karega
+  updatePreview(); 
 });
