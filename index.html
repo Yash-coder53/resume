@@ -7,80 +7,146 @@
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <header>
-    <h1>📄 Resume Builder</h1>
-    <p>Fill in your details — download a clean PDF resume instantly.</p>
+  <header class="app-header">
+    <h1>Resume Builder</h1>
+    <p>Create a professional resume matching your exact style.</p>
   </header>
 
   <main class="container">
     <!-- ================= FORM ================= -->
     <section class="form-panel">
-      <h2>Your Details</h2>
+      <h2>Fill Your Details</h2>
+
+      <!-- Settings Box (New Features) -->
+      <fieldset class="settings-box">
+        <legend>⚙️ Appearance Settings</legend>
+        
+        <label>Theme Color (Header Backgrounds):</label>
+        <input type="color" id="theme-color" value="#0000cd" oninput="applyTheme()" />
+
+        <label>Font Style:</label>
+        <select id="font-family" onchange="applyFont()">
+          <option value="Arial, sans-serif">Arial (Default)</option>
+          <option value="'Times New Roman', serif">Times New Roman</option>
+          <option value="'Courier New', monospace">Courier New</option>
+          <option value="Georgia, serif">Georgia</option>
+          <option value="'Trebuchet MS', sans-serif">Trebuchet MS</option>
+        </select>
+      </fieldset>
 
       <!-- Personal Info -->
       <fieldset>
         <legend>Personal Info</legend>
-        <input type="text" id="name" placeholder="Full Name" />
-        <input type="text" id="title" placeholder="Job Title (e.g. Frontend Developer)" />
-        <input type="email" id="email" placeholder="Email" />
-        <input type="text" id="phone" placeholder="Phone" />
-        <input type="text" id="location" placeholder="Location (City, Country)" />
-        <input type="text" id="website" placeholder="Website / LinkedIn / GitHub (optional)" />
-        <textarea id="summary" rows="3" placeholder="Professional Summary"></textarea>
+        <input type="text" id="name" placeholder="Full Name (e.g. ROHIT)" oninput="updatePreview()" />
+        <input type="text" id="phone" placeholder="Mobile No." oninput="updatePreview()" />
+        <input type="email" id="email" placeholder="Email" oninput="updatePreview()" />
+        <input type="text" id="location" placeholder="Address / Location" oninput="updatePreview()" />
+      </fieldset>
+
+      <!-- Career Objective -->
+      <fieldset>
+        <legend>Career Objective</legend>
+        <textarea id="objective" rows="3" placeholder="To secure a position as a..." oninput="updatePreview()"></textarea>
+      </fieldset>
+
+      <!-- Skills (List style like image) -->
+      <fieldset>
+        <legend>Skills (One per line)</legend>
+        <textarea id="skills" rows="5" placeholder="Tally (ERP)\nAccounting\nMS Excel" oninput="updatePreview()"></textarea>
+      </fieldset>
+
+      <!-- Education -->
+      <fieldset>
+        <legend>Education (One per line)</legend>
+        <textarea id="education" rows="4" placeholder="10th Pass (HBSE Board)\n12th Pass (HBSE Board)" oninput="updatePreview()"></textarea>
       </fieldset>
 
       <!-- Experience -->
       <fieldset>
         <legend>Experience</legend>
-        <div id="experience-list"></div>
-        <button type="button" class="add-btn" onclick="addExperience()">+ Add Experience</button>
+        <textarea id="experience" rows="3" placeholder="2 Years Experience in CA Office" oninput="updatePreview()"></textarea>
       </fieldset>
 
-      <!-- Education -->
+      <!-- Languages -->
       <fieldset>
-        <legend>Education</legend>
-        <div id="education-list"></div>
-        <button type="button" class="add-btn" onclick="addEducation()">+ Add Education</button>
+        <legend>Languages (One per line)</legend>
+        <textarea id="languages" rows="3" placeholder="Hindi (Fluent)\nEnglish (Basic)" oninput="updatePreview()"></textarea>
       </fieldset>
 
-      <!-- Skills -->
+      <!-- Personal Details -->
       <fieldset>
-        <legend>Skills</legend>
-        <textarea id="skills" rows="2" placeholder="Comma separated (e.g. HTML, CSS, JavaScript, React)"></textarea>
+        <legend>Personal Details (One per line)</legend>
+        <textarea id="personal-details" rows="3" placeholder="Date of Birth: 10-07-2003\nNationality: Indian" oninput="updatePreview()"></textarea>
+      </fieldset>
+
+      <!-- Declaration -->
+      <fieldset>
+        <legend>Declaration</legend>
+        <textarea id="declaration" rows="2" placeholder="I hereby declare that..." oninput="updatePreview()"></textarea>
       </fieldset>
 
       <button type="button" class="download-btn" onclick="downloadPDF()">⬇ Download as PDF</button>
+      <p class="page-warning" id="page-warning">⚠️ Content is getting long. It may span multiple pages in PDF.</p>
     </section>
 
     <!-- ================= PREVIEW ================= -->
     <section class="preview-panel">
       <h2>Live Preview</h2>
-      <div id="preview">
-        <div class="resume-header">
-          <h1 id="p-name">Your Name</h1>
-          <p id="p-title">Job Title</p>
-          <p id="p-contact"></p>
+      
+      <!-- A4 Sized Resume Paper -->
+      <div class="a4-page" id="resume-preview">
+        
+        <!-- App Header (Default: RESUME) -->
+        <div class="app-doc-header" id="p-doc-header">RESUME</div>
+
+        <!-- Name & Contact -->
+        <div class="resume-top">
+          <h1 id="p-name">ROHIT</h1>
+          <div class="contact-line" id="p-contact"></div>
         </div>
 
-        <div class="resume-section" id="summary-section">
-          <h3>Summary</h3>
-          <p id="p-summary"></p>
+        <!-- Career Objective -->
+        <div class="section-block" id="sec-objective">
+          <div class="section-header">CAREER OBJECTIVE</div>
+          <p id="p-objective"></p>
         </div>
 
-        <div class="resume-section" id="experience-section">
-          <h3>Experience</h3>
-          <div id="p-experience"></div>
+        <!-- Skills -->
+        <div class="section-block" id="sec-skills">
+          <div class="section-header">SKILLS</div>
+          <ul id="p-skills"></ul>
         </div>
 
-        <div class="resume-section" id="education-section">
-          <h3>Education</h3>
+        <!-- Education -->
+        <div class="section-block" id="sec-education">
+          <div class="section-header">EDUCATION</div>
           <div id="p-education"></div>
         </div>
 
-        <div class="resume-section" id="skills-section">
-          <h3>Skills</h3>
-          <p id="p-skills"></p>
+        <!-- Experience -->
+        <div class="section-block" id="sec-experience">
+          <div class="section-header">EXPERIENCE</div>
+          <div id="p-experience"></div>
         </div>
+
+        <!-- Languages -->
+        <div class="section-block" id="sec-languages">
+          <div class="section-header">LANGUAGES</div>
+          <div id="p-languages"></div>
+        </div>
+
+        <!-- Personal Details -->
+        <div class="section-block" id="sec-personal">
+          <div class="section-header">PERSONAL DETAILS</div>
+          <div id="p-personal"></div>
+        </div>
+
+        <!-- Declaration -->
+        <div class="section-block" id="sec-declaration">
+          <div class="section-header">DECLARATION</div>
+          <p id="p-declaration"></p>
+        </div>
+
       </div>
     </section>
   </main>
