@@ -1,161 +1,165 @@
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
+/* =========================================================
+   RESUME BUILDER — script.js
+   ========================================================= */
+
+const inputIds = [
+  "name", "phone", "email", "location", "objective", 
+  "skills", "education", "experience", "languages", 
+  "personal-details", "declaration"
+];
+
+// Bind input events to update preview
+inputIds.forEach(id => {
+  document.getElementById(id).addEventListener("input", updatePreview);
+});
+
+/* ---------- Update Live Preview ---------- */
+function updatePreview() {
+  // Personal Info
+  document.getElementById("p-name").textContent = document.getElementById("name").value || "YOUR NAME";
+  
+  // Contact Info (Format: Mob: | Email | Location)
+  const phone = document.getElementById("phone").value;
+  const email = document.getElementById("email").value;
+  const location = document.getElementById("location").value;
+  
+  let contactHTML = [];
+  if(phone) contactHTML.push(`Mob: ${escapeHTML(phone)}`);
+  if(email) contactHTML.push(`<a href="mailto:${escapeHTML(email)}" style="color:blue; text-decoration:underline;">${escapeHTML(email)}</a>`);
+  if(location) contactHTML.push(`${escapeHTML(location)}`);
+  
+  document.getElementById("p-contact").innerHTML = contactHTML.join(" | ");
+
+  // Career Objective
+  document.getElementById("p-objective").textContent = document.getElementById("objective").value;
+
+  // Skills (Bullet Points)
+  const skills = document.getElementById("skills").value.split('\n').filter(s => s.trim() !== "");
+  document.getElementById("p-skills").innerHTML = skills.map(s => `<li>${escapeHTML(s)}</li>`).join('');
+
+  // Education (Line by Line)
+  const edu = document.getElementById("education").value.split('\n').filter(s => s.trim() !== "");
+  document.getElementById("p-education").innerHTML = edu.map(s => `<div>${escapeHTML(s)}</div>`).join('');
+
+  // Experience
+  const exp = document.getElementById("experience").value.split('\n').filter(s => s.trim() !== "");
+  document.getElementById("p-experience").innerHTML = exp.map(s => `<div>${escapeHTML(s)}</div>`).join('');
+
+  // Languages
+  const lang = document.getElementById("languages").value.split('\n').filter(s => s.trim() !== "");
+  document.getElementById("p-languages").innerHTML = lang.map(s => `<div>${escapeHTML(s)}</div>`).join('');
+
+  // Personal Details
+  const details = document.getElementById("personal-details").value.split('\n').filter(s => s.trim() !== "");
+  document.getElementById("p-personal").innerHTML = details.map(s => `<div>${escapeHTML(s)}</div>`).join('');
+
+  // Declaration
+  document.getElementById("p-declaration").textContent = document.getElementById("declaration").value;
+
+  // Show/Hide sections based on content
+  toggleSection("sec-objective", "objective");
+  toggleSection("sec-skills", "skills");
+  toggleSection("sec-education", "education");
+  toggleSection("sec-experience", "experience");
+  toggleSection("sec-languages", "languages");
+  toggleSection("sec-personal", "personal-details");
+  toggleSection("sec-declaration", "declaration");
+
+  checkPageLength();
 }
 
-body {
-  font-family: "Segoe UI", Arial, sans-serif;
-  background: #eef2f7;
-  color: #1f2937;
-  padding: 20px;
+/* ---------- Theme Color ---------- */
+function applyTheme() {
+  const color = document.getElementById("theme-color").value;
+  document.querySelectorAll(".section-header").forEach(header => {
+    header.style.backgroundColor = color;
+  });
+  // Optional: Make the "RESUME" text match the theme color slightly
+  document.getElementById("p-doc-header").style.color = color;
 }
 
-.app-header {
-  text-align: center;
-  margin-bottom: 25px;
+/* ---------- Font Style ---------- */
+function applyFont() {
+  const font = document.getElementById("font-family").value;
+  document.getElementById("resume-preview").style.fontFamily = font;
 }
 
-.app-header h1 {
-  font-size: 2rem;
-  color: #1e3a8a;
+/* ---------- Helpers ---------- */
+function toggleSection(sectionId, inputId) {
+  const val = document.getElementById(inputId).value.trim();
+  const section = document.getElementById(sectionId);
+  section.style.display = val !== "" ? "block" : "none";
 }
 
-.container {
-  display: flex;
-  gap: 25px;
-  max-width: 1350px;
-  margin: 0 auto;
-  align-items: flex-start;
+function escapeHTML(str) {
+  const div = document.createElement("div");
+  div.textContent = str;
+  return div.innerHTML;
 }
 
-/* ============ FORM PANEL ============ */
-.form-panel {
-  flex: 1;
-  background: #fff;
-  padding: 25px;
-  border-radius: 12px;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
-  max-height: 90vh;
-  overflow-y: auto;
-  min-width: 350px;
+/* ---------- Multi-Page Warning ---------- */
+function checkPageLength() {
+  const preview = document.getElementById("resume-preview");
+  const warning = document.getElementById("page-warning");
+  
+  // A4 height is roughly 1122px (at 96 DPI). If content exceeds this, warn the user.
+  if (preview.scrollHeight > 1122) {
+    warning.style.display = "block";
+  } else {
+    warning.style.display = "none";
+  }
 }
 
-.form-panel h2 { margin-bottom: 15px; color: #1e3a8a; }
+/* ---------- PDF Download ---------- */
+function downloadPDF() {
+  const element = document.getElementById("resume-preview");
+  const name = document.getElementById("name").value.trim() || "My";
+  const themeColor = document.getElementById("theme-color").value;
 
-fieldset {
-  border: 1px solid #e5e7eb;
-  border-radius: 8px;
-  padding: 15px;
-  margin-bottom: 18px;
+  const options = {
+    margin: 0,
+    filename: `${name}_Resume.pdf`,
+    image: { type: "jpeg", quality: 0.98 },
+    html2canvas: { 
+      scale: 2, 
+      useCORS: true,
+      scrollY: 0 
+    },
+    // A4 size in inches
+    jsPDF: { unit: "in", format: "a4", orientation: "portrait" },
+    
+    // This ensures multi-page works correctly by adding a background color
+    // and making sure text doesn't break weirdly.
+    pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
+  };
+
+  html2pdf().set(options).from(element).save();
 }
 
-legend { font-weight: 600; padding: 0 8px; color: #374151; }
+/* ---------- Initialize on Load ---------- */
+window.addEventListener("DOMContentLoaded", () => {
+  // Add sample data to match your image exactly for first load
+  document.getElementById("name").value = "ROHIT";
+  document.getElementById("phone").value = "+91-9812152324";
+  document.getElementById("email").value = "Rohitmalk981215232@gmail.com";
+  document.getElementById("location").value = "Paju Kalan Dist. Jind, Haryana, India";
+  
+  document.getElementById("objective").value = "To secure a position as a Tally Operator / Accountant where I can utilize my accounting knowledge, computer skills, and contribute to organizational growth.";
+  
+  document.getElementById("skills").value = "Tally (ERP)\nAccounting (Debit & Credit)\nMS Excel\nData Entry\nInvoice & Billing\nGST (Knowledge)\nHindi & English Typing\nCorelDRAW (Basic)";
+  
+  document.getElementById("education").value = "10th Pass (HBSE Board)\n12th Pass (HBSE Board)\nBA Final";
+  
+  document.getElementById("experience").value = "2 Years Experience in CA Office";
+  
+  document.getElementById("languages").value = "Hindi (Fluent)\nEnglish (Basic)";
+  
+  document.getElementById("personal-details").value = "Date of Birth: 10-07-2003\nNationality: Indian";
+  
+  document.getElementById("declaration").value = "I hereby declare that the information provided above is true and correct to the best of my knowledge.";
 
-input[type="text"], input[type="email"], textarea, select {
-  display: block;
-  width: 100%;
-  margin: 8px 0;
-  padding: 10px;
-  border: 1px solid #d1d5db;
-  border-radius: 6px;
-  font-size: 0.9rem;
-  font-family: inherit;
-}
-
-input:focus, textarea:focus { outline: none; border-color: #2563eb; }
-
-/* Settings Box Specific */
-.settings-box { background: #f0fdf4; border-color: #bbf7d0; }
-.settings-box label { display: block; font-size: 0.85rem; font-weight: 600; margin-top: 8px; color: #166534; }
-.settings-box input[type="color"] { width: 100%; height: 40px; cursor: pointer; border: 1px solid #ccc; border-radius: 6px; padding: 2px; margin-top: 4px; }
-
-.download-btn {
-  width: 100%;
-  padding: 14px;
-  background: #1e3a8a;
-  color: #fff;
-  border: none;
-  border-radius: 8px;
-  font-size: 1rem;
-  font-weight: 600;
-  cursor: pointer;
-  margin-top: 10px;
-}
-
-.download-btn:hover { background: #1e40af; }
-
-.page-warning {
-  display: none;
-  color: #dc2626;
-  font-size: 0.85rem;
-  text-align: center;
-  margin-top: 10px;
-  font-weight: bold;
-}
-
-/* ============ PREVIEW PANEL ============ */
-.preview-panel {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-.preview-panel h2 { margin-bottom: 15px; color: #1e3a8a; align-self: flex-start;}
-
-/* A4 Paper Style */
-.a4-page {
-  background: #fff;
-  width: 210mm;
-  min-height: 297mm;
-  padding: 15mm;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
-  font-family: Arial, sans-serif;
-  color: #000;
-  font-size: 11pt;
-  line-height: 1.4;
-}
-
-/* App Document Header (RESUME) */
-.app-doc-header {
-  text-align: center;
-  font-size: 18pt;
-  font-weight: bold;
-  letter-spacing: 2px;
-  margin-bottom: 20px;
-  border-bottom: 2px dashed #ccc;
-  padding-bottom: 10px;
-}
-
-/* Resume Top Section */
-.resume-top h1 { font-size: 24pt; text-transform: uppercase; margin-bottom: 5px; }
-.contact-line { font-size: 11pt; margin-bottom: 15px; word-spacing: 2px; }
-.contact-line span { margin: 0 4px; }
-
-/* Blue Highlight Sections */
-.section-block { margin-bottom: 15px; display: none; }
-
-.section-header {
-  background-color: #0000cd; /* Default Blue */
-  color: #ffffff;
-  font-size: 12pt;
-  font-weight: bold;
-  padding: 3px 8px;
-  margin-bottom: 8px;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-}
-
-/* Lists inside sections */
-.section-block ul { padding-left: 20px; margin-top: 5px; }
-.section-block ul li { margin-bottom: 3px; }
-
-/* Text lines inside sections */
-.section-block p, .section-block div { margin-bottom: 4px; }
-
-/* ============ RESPONSIVE ============ */
-@media (max-width: 1100px) {
-  .container { flex-direction: column; }
-  .a4-page { width: 100%; min-height: auto; padding: 20px; }
-}
+  // Apply default settings
+  applyTheme();
+  applyFont();
+  updatePreview();
+});
